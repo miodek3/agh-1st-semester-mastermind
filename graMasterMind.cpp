@@ -7,12 +7,17 @@ char kolory_legenda[8] = { 'b', 'g', 'r', 'w', 'k','y', 'p','o' };
 const int COLS = 4;
 const int ROWS = 9;
 const int COLORS_NO = 8;
+const char NO_VALUE = '_';
+const char TRAFIONY_KOLOR = '&';
+const char TRAFIONE_POLE_KOLOR = '*';
 char* podaj_kolory();
-void uzupelnienie(char* kolory, char** board, int rowNo);
+void uzupelnienieTablicy(char* kolory, char** board, int rowNo);
 bool checkWin(char* kolory, char* wyl_kolor);
 void printboard(char** board, char** hints);
 char** initMatrix();
 void printLegend();
+char* analyzeColorsAndGetHints(char *kolory, char *wyl_kolor);
+
 
 
 int main()
@@ -44,12 +49,15 @@ int main()
 
 	char** board = initMatrix();
 	printboard(board, hints);
-	while (!guessed && attempt < 2)
+	while (!guessed && attempt < 9)
 	{
 		cout << "Próba nr " << attempt + 1 << endl;
 
 		char* kolory = podaj_kolory(); //tu sa przechowywane kolory podane przez uzytkownika
-		uzupelnienie(kolory, board, attempt);
+		uzupelnienieTablicy(kolory, board, attempt);
+		char* currentHints = analyzeColorsAndGetHints(kolory, wyl_kolor);
+		uzupelnienieTablicy(currentHints, hints, attempt);
+		
 		printboard(board, hints);
 		attempt++;
 		guessed = checkWin(kolory, wyl_kolor);
@@ -69,11 +77,11 @@ char* podaj_kolory()
 	return kolory;
 }
 
-void uzupelnienie(char* kolory, char** board, int rowNr)
+void uzupelnienieTablicy(char* symbole, char** tablica, int rowNr)
 {
 	for (int i = 0; i < COLS; i++)
 	{
-		board[rowNr][i] = kolory[i];
+		tablica[rowNr][i] = symbole[i];
 	}
 
 
@@ -115,7 +123,7 @@ char** initMatrix()
 		board[i] = new char[COLS];
 		for (int j = 0; j < COLS; j++)
 		{
-			board[i][j] = '_';
+			board[i][j] = NO_VALUE;
 		}
 	}
 	return  board;
@@ -127,14 +135,43 @@ void printLegend()
 	cout << "blue - b" << endl;
 	cout << "green - g" << endl;
 	cout << "red- r" << endl;
-	cout << "white - w" << endl;
-	cout << "pink - k" << endl;
+	cout << "white - w" << "\t\t"<<"*-oznacza poprawny kolor i poprawnie podane miejsce"<<endl;
+	cout << "pink - k" << "\t\t"<<"&-oznacza poprawny kolor, ale podany na zlym miejscu"<<endl;
 	cout << "yellow - y" << endl;
 	cout << "purple - p" << endl;
 	cout << "orange - o" << endl;
 }
-
-/*
-9: _ _ _ _ | _ _ _ _
-8:_ _ _ _ | _ _ _ _
-*/
+char* analyzeColorsAndGetHints(char *kolory,char* wyl_kolor)
+{
+	int g = 0;
+	int k = 0;
+	char* currenthints = new char[COLS];
+	for (int i = 0; i < COLS;i++)
+	{
+		currenthints[i] = NO_VALUE;
+	}
+	for (int i = 0;i < COLS;i++)
+		
+	{
+		char kolor = wyl_kolor[i];
+		for (int j = 0; j < COLS;j++)
+		{
+			if (kolory[j] == kolor)
+			{
+				currenthints[k] = TRAFIONY_KOLOR;
+				k++;
+				break;
+			}
+		}
+		
+	}
+	for (int i = 0; i < COLS; i++)
+	{
+		if (kolory[i] == wyl_kolor[i])
+		{
+			currenthints[g] = TRAFIONE_POLE_KOLOR;
+			g++;
+		}
+	}
+	return currenthints;
+}
