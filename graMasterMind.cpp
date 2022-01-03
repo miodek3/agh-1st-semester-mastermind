@@ -10,12 +10,14 @@ const int COLORS_NO = 8;
 char* podaj_kolory();
 void uzupelnienie(char* kolory, char** board, int rowNo);
 bool checkWin(char* kolory, char* wyl_kolor);
-void printboard(char** board);
-char** initboard();
+void printboard(char** board, char** hints);
+char** initMatrix();
 void printLegend();
+
 
 int main()
 {
+	char** hints = initMatrix();
 	int* wyl_liczby = new int[4];
 	char* wyl_kolor = new char[4];
 	printLegend();
@@ -40,15 +42,15 @@ int main()
 	bool guessed = false;
 	int attempt = 0;
 
-	char** board = initboard();
-	printboard(board);
+	char** board = initMatrix();
+	printboard(board, hints);
 	while (!guessed && attempt < 2)
 	{
 		cout << "Próba nr " << attempt + 1 << endl;
 
 		char* kolory = podaj_kolory(); //tu sa przechowywane kolory podane przez uzytkownika
 		uzupelnienie(kolory, board, attempt);
-		printboard(board);
+		printboard(board, hints);
 		attempt++;
 		guessed = checkWin(kolory, wyl_kolor);
 	}
@@ -87,23 +89,27 @@ bool checkWin(char* kolory, char* wyl_kolor) {
 	}
 	return counter == 4;
 }
-void printboard(char** board)
+void printboard(char** board, char** hints)
 {
 	for (int i = 0; i < ROWS; i++)
 	{
 		cout << ROWS - i << ": ";
 		for (int j = 0; j < COLS; j++)
 		{
-			cout<< board[i][j] << " ";
+			cout << board[i][j] << " ";
 		}
 		cout << " | ";
+		for (int j = 0; j < COLS; j++)
+		{
+			cout << " " << hints[i][j]<<" ";
+		}
 		cout << endl;
 	}
 	cout << endl;
 }
-char** initboard()
+char** initMatrix()
 {
-	char** board = new char* [ROWS]; 
+	char** board = new char* [ROWS];
 	for (int i = 0; i < ROWS; i++)
 	{
 		board[i] = new char[COLS];
@@ -129,6 +135,6 @@ void printLegend()
 }
 
 /*
-9: _ _ _ _ | _ _ _ _  
+9: _ _ _ _ | _ _ _ _
 8:_ _ _ _ | _ _ _ _
 */
