@@ -101,7 +101,7 @@ void printboard(char** board, char** hints)
 {
 	for (int i = 0; i < ROWS; i++)
 	{
-		cout << ROWS - i << ": ";
+		cout << i+1 << ": ";
 		for (int j = 0; j < COLS; j++)
 		{
 			cout << board[i][j] << " ";
